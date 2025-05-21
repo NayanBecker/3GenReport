@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model T_Account {
+  id_Account        Int      @id @default(autoincrement())
+  nome_Account      String
+  email_Account     String   @unique
+  password_Account  String
+  createdAt_Account DateTime @default(now())
+  updatedAt_Account DateTime @updatedAt
+}
+
+model T_Report {
+  id_Report        String   @id @default(uuid())
+  content_Report   String?
+  createdAt_Report DateTime @default(now())
+  updatedAt_Report DateTime @updatedAt
+}
