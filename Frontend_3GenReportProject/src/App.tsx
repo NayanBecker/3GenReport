@@ -1,20 +1,12 @@
-import './index.css'
+import React from 'react';
+import ReportEditor from './components/ReportEditor/ReportEditor';
 
-function App() {
-
+export default function App() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-      <p className="text-lg text-blue-500">
-        This is a simple paragraph to demonstrate Tailwind CSS styling.
-      </p>
-      <button className="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded">
-        Click me
-      </button>
+    <div className="min-h-screen bg-gray-50 relative">
+      <div className="container mx-auto py-8">
+        <ReportEditor />
+      </div>
     </div>
-  )
+  );
 }
-
-export default App
