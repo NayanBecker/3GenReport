@@ -1,4 +1,3 @@
-import React from 'react';
 import type { BlockType } from '../../types';
 import { BsFileFont, BsPaperclip, BsChatSquareDotsFill } from "react-icons/bs";
 
