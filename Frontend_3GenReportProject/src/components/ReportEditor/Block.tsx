@@ -1,5 +1,6 @@
 import React from 'react';
-import type { Block, CitationBlock, AttachmentBlock } from '../../types';
+import type { Block, CitationBlock, AttachmentBlock as AttachmentBlockType } from '../../types';
+import { AttachmentBlock } from './AttachmentBlock';
 
 interface DragHandleProps {
     role?: string;
@@ -15,7 +16,7 @@ interface DragHandleProps {
 
 interface BlockComponentProps {
     block: Block;
-    onUpdate: (updates: Partial<Block | CitationBlock | AttachmentBlock>) => void;
+    onUpdate: (updates: Partial<Block | CitationBlock | AttachmentBlockType>) => void;
     onDelete: () => void;
     dragHandleProps?: DragHandleProps;
 }
@@ -33,32 +34,13 @@ export default function BlockComponent({ block, onUpdate, onDelete, dragHandlePr
                     />
                 );
 
-            case 'attachment': {
-                const attachmentBlock = block as AttachmentBlock;
+            case 'attachment':
                 return (
-                    <div className="flex flex-col gap-2">
-                        <input
-                            type="file"
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    onUpdate({
-                                        content: file.name,
-                                        fileUrl: URL.createObjectURL(file),
-                                        fileName: file.name,
-                                    } as Partial<AttachmentBlock>);
-                                }
-                            }}
-                            className="w-full"
-                        />
-                        {attachmentBlock.content && (
-                            <div className="text-sm text-gray-600">
-                                Arquivo anexado: {attachmentBlock.content}
-                            </div>
-                        )}
-                    </div>
+                    <AttachmentBlock
+                        block={block as AttachmentBlockType}
+                        onUpdate={onUpdate}
+                    />
                 );
-            }
 
             case 'citation': {
                 const citationBlock = block as CitationBlock;

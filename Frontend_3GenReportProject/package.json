@@ -15,9 +15,11 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@fastify/static": "^8.2.0",
     "@tailwindcss/vite": "^4.1.7",
+    "@types/react-rnd": "^7.4.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
+    "react-rnd": "^10.5.2",
     "tailwindcss": "^4.1.7"
   },
   "devDependencies": {
