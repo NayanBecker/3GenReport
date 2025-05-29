@@ -7,6 +7,7 @@ import { config } from 'dotenv';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { reportRoutes } from './routes/reportRoutes';
+import pdfRoutes from './routes/pdf';
 
 config();
 
@@ -37,6 +38,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/3gen-repo
 
 // Registrar rotas
 server.register(reportRoutes, { prefix: '/api' });
+server.register(pdfRoutes, { prefix: '/api' });
 
 // Iniciar o servidor
 const start = async () => {

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Report, Block } from '../types';
+import { Block } from '../types';
 
-export interface ReportDocument extends Omit<Report, 'id'>, Document {
+export interface ReportDocument extends Omit<Block, 'id'>, Document {
     id: string;
 }
 
