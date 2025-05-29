@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Block, Report } from '../../types';
 import BlockList from './BlockList';
 import Toolbar from './Toolbar';
+import { ReportActions } from './ReportActions';
 
 interface ReportEditorProps {
     initialReport?: Report;
@@ -128,15 +129,40 @@ export default function ReportEditor({ initialReport }: ReportEditorProps) {
         });
     };
 
+    const handleSave = async () => {
+        try {
+            const response = await fetch('/api/reports', {
+                method: report.id ? 'PUT' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(report),
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar relatório');
+            }
+
+            const savedReport = await response.json();
+            setReport(savedReport);
+        } catch (error) {
+            console.error('Erro ao salvar:', error);
+            throw error;
+        }
+    };
+
     return (
-        <div className="flex flex-col gap-4 p-4 max-w-4xl mx-auto pr-[200px]">
-            <input
-                type="text"
-                value={report.title}
-                onChange={(e) => setReport((prev) => ({ ...prev, title: e.target.value }))}
-                className="text-2xl font-bold border-none outline-none"
-                placeholder="Título do Relatório"
-            />
+        <div className="flex flex-col gap-4 p-4 max-w-4xl mx-auto">
+            <div className="flex justify-between items-center">
+                <input
+                    type="text"
+                    value={report.title}
+                    onChange={(e) => setReport((prev) => ({ ...prev, title: e.target.value }))}
+                    className="text-2xl font-bold border-none outline-none bg-transparent flex-grow"
+                    placeholder="Título do Relatório"
+                />
+                <ReportActions report={report} onSave={handleSave} />
+            </div>
 
             <BlockList
                 blocks={report.blocks}

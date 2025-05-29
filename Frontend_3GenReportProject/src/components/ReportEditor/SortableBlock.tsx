@@ -36,6 +36,7 @@ export function SortableBlock({ block, onUpdate, onDelete }: SortableBlockProps)
                 block={block}
                 onUpdate={onUpdate}
                 onDelete={onDelete}
+                dragHandleProps={{ ...attributes, ...listeners }}
             />
         </div>
     );
