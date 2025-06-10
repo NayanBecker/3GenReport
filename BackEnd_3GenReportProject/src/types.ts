@@ -1,12 +1,14 @@
 export interface Block {
     id: string;
-    type: 'text' | 'citation' | 'attachment';
+    type: 'text' | 'citation' | 'attachment' | 'section' | 'subsection';
     title: string;
     content: string;
     order: number;
     source?: string;
     fileName?: string;
     fileUrl?: string;
+    number?: number;
+    parentSectionNumber?: number;
 }
 
 export interface Report {
@@ -15,6 +17,12 @@ export interface Report {
     blocks: Block[];
     createdAt: Date;
     updatedAt: Date;
+    author?: string;
+    institution?: string;
+    department?: string;
+    keywords?: string[];
+    abstract?: string;
+    references?: string[];
 }
 
 export interface UploadFileResponse {

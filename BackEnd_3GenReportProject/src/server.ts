@@ -15,7 +15,6 @@ const server = fastify({
   logger: true
 });
 
-// Registrar plugins
 async function registerPlugins() {
   await server.register(cors);
   await server.register(multipart);
@@ -25,22 +24,18 @@ async function registerPlugins() {
   });
 }
 
-// Criar pasta de uploads se não existir
 const uploadsDir = join(__dirname, '../uploads');
 if (!existsSync(uploadsDir)) {
   mkdirSync(uploadsDir);
 }
 
-// Conectar ao MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/3gen-report')
   .then(() => server.log.info('Conectado ao MongoDB'))
   .catch(err => server.log.error('Erro ao conectar ao MongoDB:', err));
 
-// Registrar rotas
 server.register(reportRoutes, { prefix: '/api' });
 server.register(pdfRoutes, { prefix: '/api' });
 
-// Iniciar o servidor
 const start = async () => {
   try {
     await registerPlugins();

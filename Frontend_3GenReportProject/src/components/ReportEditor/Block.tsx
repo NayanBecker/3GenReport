@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Block, CitationBlock, AttachmentBlock as AttachmentBlockType } from '../../types';
+import type { Block, CitationBlock, AttachmentBlock as AttachmentBlockType, SectionBlock, SubsectionBlock } from '../../types';
 import { AttachmentBlock } from './AttachmentBlock';
 
 interface DragHandleProps {
@@ -29,7 +29,7 @@ export default function BlockComponent({ block, onUpdate, onDelete, dragHandlePr
                     <textarea
                         value={block.content}
                         onChange={(e) => onUpdate({ content: e.target.value })}
-                        className="w-full p-2 border rounded min-h-[100px] resize-y"
+                        className="w-full min-h-[100px] resize-y"
                         placeholder="Digite seu texto aqui..."
                     />
                 );
@@ -62,6 +62,49 @@ export default function BlockComponent({ block, onUpdate, onDelete, dragHandlePr
                     </div>
                 );
             }
+
+            case 'section': {
+                const sectionBlock = block as SectionBlock;
+                return (
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold">{sectionBlock.number}.</span>
+                            <input
+                                type="text"
+                                value={sectionBlock.title}
+                                onChange={(e) => onUpdate({ title: e.target.value })}
+                                className="text-lg font-bold border-none outline-none bg-transparent flex-grow"
+                                placeholder="Título da seção"
+                            />
+                        </div>
+
+                    </div>
+                );
+            }
+
+            case 'subsection': {
+                const subsectionBlock = block as SubsectionBlock;
+                return (
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold">{subsectionBlock.parentSectionNumber}.{subsectionBlock.number}.</span>
+                            <input
+                                type="text"
+                                value={subsectionBlock.title}
+                                onChange={(e) => onUpdate({ title: e.target.value })}
+                                className="text-lg font-bold border-none outline-none bg-transparent flex-grow"
+                                placeholder="Título da subseção"
+                            />
+                        </div>
+                        <textarea
+                            value={subsectionBlock.content}
+                            onChange={(e) => onUpdate({ content: e.target.value })}
+                            className="w-full p-2 border rounded min-h-[100px] resize-y"
+                            placeholder="Conteúdo da subseção..."
+                        />
+                    </div>
+                );
+            }
         }
     };
 
@@ -72,19 +115,23 @@ export default function BlockComponent({ block, onUpdate, onDelete, dragHandlePr
                     <div className="cursor-grab opacity-40 group-hover:opacity-100 transition-opacity" {...dragHandleProps}>
                         ⋮⋮
                     </div>
-                    <input
-                        type="text"
-                        value={block.title}
-                        onChange={(e) => onUpdate({ title: e.target.value })}
-                        className="text-lg font-medium border-none outline-none bg-transparent flex-grow"
-                        placeholder="Título do bloco"
-                    />
+                    {block.type !== 'section' && block.type !== 'subsection' && (
+                        <input
+                            type="text"
+                            value={block.title}
+                            onChange={(e) => onUpdate({ title: e.target.value })}
+                            className="text-lg font-medium border-none outline-none bg-transparent flex-grow"
+                            placeholder="Título do bloco"
+                        />
+                    )}
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="text-sm font-medium text-gray-500">
                         {block.type === 'text' && 'Texto'}
                         {block.type === 'attachment' && 'Anexo'}
                         {block.type === 'citation' && 'Citação'}
+                        {block.type === 'section' && 'Seção'}
+                        {block.type === 'subsection' && 'Subseção'}
                     </div>
                     <button
                         onClick={onDelete}

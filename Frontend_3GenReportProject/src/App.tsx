@@ -1,5 +1,4 @@
-import React from 'react';
-import ReportEditor from './components/ReportEditor/ReportEditor';
+import ReportEditor from './pages/ReportEditor';
 
 export default function App() {
   return (
