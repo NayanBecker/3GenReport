@@ -1,4 +1,4 @@
-export type BlockType = 'text' | 'attachment' | 'citation';
+export type BlockType = 'text' | 'attachment' | 'citation' | 'section' | 'subsection';
 
 export interface Block {
     id: string;
@@ -23,10 +23,27 @@ export interface CitationBlock extends Block {
     source: string;
 }
 
+export interface SectionBlock extends Block {
+    type: 'section';
+    number: number;
+}
+
+export interface SubsectionBlock extends Block {
+    type: 'subsection';
+    number: number;
+    parentSectionNumber: number;
+}
+
 export interface Report {
     id: string;
     title: string;
     blocks: Block[];
     createdAt: Date;
     updatedAt: Date;
+    author?: string;
+    institution?: string;
+    department?: string;
+    keywords?: string[];
+    abstract?: string;
+    references?: string[];
 } 

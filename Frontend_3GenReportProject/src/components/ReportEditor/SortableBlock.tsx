@@ -30,7 +30,7 @@ export function SortableBlock({ block, onUpdate, onDelete }: SortableBlockProps)
         <div
             ref={setNodeRef}
             style={style}
-            className="relative"
+            className={`relative ${block.type === 'subsection' ? 'ml-8' : ''}`}
         >
             <BlockComponent
                 block={block}

@@ -1,5 +1,5 @@
 import type { BlockType } from '../../types';
-import { BsFileFont, BsPaperclip, BsChatSquareDotsFill } from "react-icons/bs";
+import { BsFileFont, BsPaperclip, BsChatSquareDotsFill, BsListNested, BsList } from "react-icons/bs";
 
 
 interface ToolbarProps {
@@ -12,6 +12,24 @@ export default function Toolbar({ onAddBlock }: ToolbarProps) {
             <div className="text-sm font-medium text-gray-600 mb-2">
                 Adicionar Blocos
             </div>
+            <button
+                onClick={() => onAddBlock('section')}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+            >
+                <BsList className="h-5 w-5" fill="currentColor" />
+                Seção
+            </button>
+
+            <button
+                onClick={() => onAddBlock('subsection')}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-400 text-white rounded hover:bg-orange-500 transition-colors"
+            >
+                <BsListNested className="h-5 w-5" fill="currentColor" />
+                Subseção
+            </button>
+
+            <div className="border-t border-gray-400 my-2"></div>
+
             <button
                 onClick={() => onAddBlock('text')}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import type { Block, Report } from '../../types';
-import BlockList from './BlockList';
-import Toolbar from './Toolbar';
-import { ReportActions } from './ReportActions';
+import type { Block, Report, SectionBlock, SubsectionBlock } from '../types';
+import BlockList from '../components/ReportEditor/BlockList';
+import Toolbar from '../components/ReportEditor/Toolbar';
+import { ReportActions } from '../components/ReportEditor/ReportActions';
 
 interface ReportEditorProps {
     initialReport?: Report;
@@ -79,13 +79,84 @@ export default function ReportEditor({ initialReport }: ReportEditorProps) {
     );
 
     const addBlock = (type: Block['type']) => {
-        const newBlock: Block = {
-            id: crypto.randomUUID(),
-            type,
-            content: '',
-            order: report.blocks.length,
-            title: 'Novo Bloco'
-        };
+        let newBlock: Block;
+
+        if (type === 'section') {
+            // Count existing sections to determine the new section number
+            const sectionCount = report.blocks.filter(block => block.type === 'section').length;
+            newBlock = {
+                id: crypto.randomUUID(),
+                type: 'section',
+                content: '',
+                order: report.blocks.length,
+                title: 'Nova Seção',
+                number: sectionCount + 1
+            } as SectionBlock;
+        } else if (type === 'subsection') {
+            // Find the last section to determine parent section number
+            const lastSection = [...report.blocks]
+                .reverse()
+                .find(block => block.type === 'section') as SectionBlock | undefined;
+
+            if (!lastSection) {
+                // If no section exists, create a section first
+                const sectionBlock: SectionBlock = {
+                    id: crypto.randomUUID(),
+                    type: 'section',
+                    content: '',
+                    order: report.blocks.length,
+                    title: 'Nova Seção',
+                    number: 1
+                };
+
+                // Count subsections in the current section
+                const subsectionCount = report.blocks.filter(
+                    block => block.type === 'subsection' &&
+                        (block as SubsectionBlock).parentSectionNumber === sectionBlock.number
+                ).length;
+
+                const subsectionBlock: SubsectionBlock = {
+                    id: crypto.randomUUID(),
+                    type: 'subsection',
+                    content: '',
+                    order: report.blocks.length + 1,
+                    title: 'Nova Subseção',
+                    number: subsectionCount + 1,
+                    parentSectionNumber: sectionBlock.number
+                };
+
+                setReport((prev) => ({
+                    ...prev,
+                    blocks: [...prev.blocks, sectionBlock, subsectionBlock],
+                    updatedAt: new Date(),
+                }));
+                return;
+            }
+
+            // Count subsections in the current section
+            const subsectionCount = report.blocks.filter(
+                block => block.type === 'subsection' &&
+                    (block as SubsectionBlock).parentSectionNumber === lastSection.number
+            ).length;
+
+            newBlock = {
+                id: crypto.randomUUID(),
+                type: 'subsection',
+                content: '',
+                order: report.blocks.length,
+                title: 'Nova Subseção',
+                number: subsectionCount + 1,
+                parentSectionNumber: lastSection.number
+            } as SubsectionBlock;
+        } else {
+            newBlock = {
+                id: crypto.randomUUID(),
+                type,
+                content: '',
+                order: report.blocks.length,
+                title: 'Novo Bloco'
+            };
+        }
 
         setReport((prev) => ({
             ...prev,
@@ -152,7 +223,7 @@ export default function ReportEditor({ initialReport }: ReportEditorProps) {
     };
 
     return (
-        <div className="flex flex-col gap-4 p-4 max-w-4xl mx-auto">
+        <div className="flex flex-col gap-4 p-1 max-w-4xl mx-auto">
             <div className="flex justify-between items-center">
                 <input
                     type="text"

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Block } from '../../types';
+import type { Block, SectionBlock, SubsectionBlock } from '../../types';
 import {
     DndContext,
     closestCenter,
@@ -41,6 +41,27 @@ export default function BlockList({ blocks, onUpdateBlock, onDeleteBlock, onMove
         }
     };
 
+    // Organize blocks into sections
+    const organizedBlocks = blocks.reduce((acc: { [key: string]: Block[] }, block) => {
+        if (block.type === 'section') {
+            acc[`section_${(block as SectionBlock).number}`] = [block];
+        } else if (block.type === 'subsection') {
+            const sectionKey = `section_${(block as SubsectionBlock).parentSectionNumber}`;
+            if (!acc[sectionKey]) {
+                acc[sectionKey] = [];
+            }
+            acc[sectionKey].push(block);
+        } else {
+            // Add non-section blocks to the last section or create a default section
+            const lastSectionKey = Object.keys(acc).pop() || 'default';
+            if (!acc[lastSectionKey]) {
+                acc[lastSectionKey] = [];
+            }
+            acc[lastSectionKey].push(block);
+        }
+        return acc;
+    }, {});
+
     return (
         <DndContext
             sensors={sensors}
@@ -52,13 +73,17 @@ export default function BlockList({ blocks, onUpdateBlock, onDeleteBlock, onMove
                     items={blocks.map(block => block.id)}
                     strategy={verticalListSortingStrategy}
                 >
-                    {blocks.map((block) => (
-                        <SortableBlock
-                            key={block.id}
-                            block={block}
-                            onUpdate={onUpdateBlock.bind(null, block.id)}
-                            onDelete={() => onDeleteBlock(block.id)}
-                        />
+                    {Object.entries(organizedBlocks).map(([sectionKey, sectionBlocks]) => (
+                        <div key={sectionKey} className="flex flex-col gap-1">
+                            {sectionBlocks.map((block) => (
+                                <SortableBlock
+                                    key={block.id}
+                                    block={block}
+                                    onUpdate={onUpdateBlock.bind(null, block.id)}
+                                    onDelete={() => onDeleteBlock(block.id)}
+                                />
+                            ))}
+                        </div>
                     ))}
                 </SortableContext>
                 {blocks.length === 0 && (
