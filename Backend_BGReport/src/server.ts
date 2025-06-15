@@ -1,26 +1,57 @@
+// src/server.ts
 
-import fastify from 'fastify';
-import { compileRoute } from './routes/compile.route';
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import fastifyJwt from '@fastify/jwt';
+import { userRoutes } from './modules/users/user.route';
+import { projectRoutes } from './modules/projects/project.route';
 
-const server = fastify({
-    logger: true,
-    bodyLimit: 10 * 1024 * 1024,
+declare module 'fastify' {
+    export interface FastifyInstance {
+        authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    }
+
+    export interface FastifyRequest {
+        user: {
+            id: string;
+            name: string;
+            email: string;
+        };
+    }
+}
+
+declare module '@fastify/jwt' {
+    export interface FastifyJWT {
+        payload: { id: string; name: string; email: string };
+        user: { id: string; name: string; email: string };
+    }
+}
+
+export const server: FastifyInstance = fastify({ logger: true });
+
+server.register(fastifyJwt, {
+    secret: process.env.JWT_SECRET || 'supersecret-change-this-in-production',
 });
 
-server.register(compileRoute);
-
-server.get('/', async () => {
-    return { status: 'Serviço de compilação LaTeX está no ar. Use a rota POST /compile.' };
+server.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+        await request.jwtVerify();
+    } catch (e) {
+        reply.code(401).send({ message: 'Autenticação necessária.', error: e });
+    }
 });
+
+server.register(userRoutes, { prefix: '/api/users' });
+server.register(projectRoutes, { prefix: '/api/projects' });
 
 const start = async () => {
     try {
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-        await server.listen({ port, host: '0.0.0.0' });
+        await server.listen({ port: 3000, host: '0.0.0.0' });
     } catch (err) {
         server.log.error(err);
         process.exit(1);
     }
 };
 
-start();
+if (require.main === module) {
+    start();
+}
