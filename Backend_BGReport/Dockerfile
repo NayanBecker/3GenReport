@@ -1,27 +1,26 @@
-# Dockerfile
-
-# Estágio 1: Base com Node.js e LaTeX
 FROM node:18-slim
 
-# Instala o texlive
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     texlive-latex-base \
     texlive-latex-recommended \
     texlive-fonts-recommended \
     texlive-lang-portuguese \
+    openssl \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma ./prisma/
 
-RUN npm install --omit=dev # --omit=dev em vez de --production é a prática moderna
+RUN npm install --omit=dev
+
+RUN npx prisma generate
 
 COPY ./dist ./dist
 
 EXPOSE 3000
 
-# Alterado para iniciar o novo arquivo de servidor
 CMD [ "node", "dist/server.js" ]
