@@ -3,6 +3,7 @@
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fastifyJwt from '@fastify/jwt';
 import { userRoutes } from './modules/users/user.route';
+import { projectRoutes } from './modules/projects/project.route';
 
 declare module 'fastify' {
     export interface FastifyInstance {
@@ -40,6 +41,7 @@ server.decorate('authenticate', async (request: FastifyRequest, reply: FastifyRe
 });
 
 server.register(userRoutes, { prefix: '/api/users' });
+server.register(projectRoutes, { prefix: '/api/projects' });
 
 const start = async () => {
     try {
