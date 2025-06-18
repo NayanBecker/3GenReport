@@ -1,9 +1,8 @@
-// src/lib/slateUtils.ts
 import { Editor, Transforms, Text } from 'slate';
 
 export const isMarkActive = (editor: Editor, format: string) => {
     const marks = Editor.marks(editor);
-    return marks ? marks[format] === true : false;
+    return marks ? (marks as Record<string, unknown>)[format] === true : false;
 };
 
 export const toggleMark = (editor: Editor, format: string) => {
