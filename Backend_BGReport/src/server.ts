@@ -1,9 +1,9 @@
-// src/server.ts
-
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fastifyJwt from '@fastify/jwt';
 import { userRoutes } from './modules/users/user.route';
+import fastifyCors from '@fastify/cors';
 import { projectRoutes } from './modules/projects/project.route';
+import { compileRoute } from './routes/compile.route';
 
 declare module 'fastify' {
     export interface FastifyInstance {
@@ -28,6 +28,11 @@ declare module '@fastify/jwt' {
 
 export const server: FastifyInstance = fastify({ logger: true });
 
+server.register(fastifyCors, {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
 server.register(fastifyJwt, {
     secret: process.env.JWT_SECRET || 'supersecret-change-this-in-production',
 });
@@ -42,6 +47,7 @@ server.decorate('authenticate', async (request: FastifyRequest, reply: FastifyRe
 
 server.register(userRoutes, { prefix: '/api/users' });
 server.register(projectRoutes, { prefix: '/api/projects' });
+server.register(compileRoute);
 
 const start = async () => {
     try {

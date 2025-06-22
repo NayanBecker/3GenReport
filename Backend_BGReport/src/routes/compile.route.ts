@@ -1,10 +1,7 @@
-// src/routes/compile.route.ts
-
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { createReadStream } from 'fs';
 import { compileLatex } from '../services/latex.service';
 
-// Interface para tipar o corpo da requisição, garantindo segurança
 interface ICompileBody {
     documentConfig: string;
     documentContent: string;
@@ -14,7 +11,6 @@ export async function compileRoute(fastify: FastifyInstance) {
     fastify.post(
         '/compile',
         {
-            // Adicionar um schema melhora a performance e a segurança
             schema: {
                 body: {
                     type: 'object',
