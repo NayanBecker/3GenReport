@@ -21,8 +21,8 @@ export function SlateBlock({ block, updateBlock }: SlateBlockProps) {
         text: "Escreva seu texto aqui..."
     };
 
-    const textClass = block.type === 'section' ? 'text-2xl font-bold' :
-        block.type === 'subsection' ? 'text-xl font-semibold' :
+    const textClass = block.type === 'section' ? ' text-2xl font-bold' :
+        block.type === 'subsection' ? ' text-xl font-semibold' :
             '';
 
     return (

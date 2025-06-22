@@ -24,7 +24,7 @@ export function DocumentConfigPanel({ config, setConfig }: DocumentConfigPanelPr
     };
 
     return (
-        <div className="w-full h-full bg-gray-800 text-white p-4 overflow-y-auto">
+        <div className="w-full pb-[10rem] bg-gray-800 text-white p-4 overflow-y-auto">
             <h2 className="text-xl font-bold border-b border-gray-600 pb-2 mb-6">Configurações do Documento</h2>
 
             <form>

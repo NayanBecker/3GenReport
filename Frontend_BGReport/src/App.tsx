@@ -3,7 +3,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 import { v4 as uuidv4 } from 'uuid';
-import { Plus } from 'lucide-react';
+import { Download, LoaderCircle, Plus } from 'lucide-react';
 
 import type { Block, BlockType, DocConfig } from './types/block';
 import { generateLatex } from './lib/latexGenerator';
@@ -11,6 +11,8 @@ import { generatePreambulo } from './lib/preambuloGenerator';
 
 import { SortableBlockItem } from './components/SortableBlockItem';
 import { DocumentConfigPanel } from './components/DocumentConfigPanel';
+import { compileAndDownloadPdf } from './services/sendtoApi';
+
 
 
 const initialBlocks: Block[] = [
@@ -42,11 +44,34 @@ export default function App() {
   const [contentLatex, setContentLatex] = useState('');
   const [preambleLatex, setPreambleLatex] = useState('');
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+  useEffect(() => { setPreambleLatex(generatePreambulo(docConfig)); }, [docConfig]);
+  useEffect(() => { setContentLatex(generateLatex(blocks)); }, [blocks]);
+
+  const handleCompile = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    const payload = {
+      documentConfig: preambleLatex,
+      documentContent: `\\begin{document}\n\n${contentLatex}\n\n\\end{document}`
+    };
+
+    try {
+      await compileAndDownloadPdf(payload);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Ocorreu um erro desconhecido.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
@@ -87,9 +112,27 @@ export default function App() {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100 dark:bg-gray-900">
 
-      <div className="w-full md:w-64 lg:w-80 bg-gray-800 flex-shrink-0">
+      <div className="w-full md:w-64 lg:w-80 bg-gray-800 flex-shrink-0 p-4">
         <DocumentConfigPanel config={docConfig} setConfig={setDocConfig} />
+        <div className="pt-4 border-t border-gray-700">
+          <button
+            onClick={handleCompile}
+            disabled={isLoading}
+            className="btn-add w-full flex items-center justify-center disabled:bg-gray-500 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <LoaderCircle size={20} className="animate-spin mr-2" />
+            ) : (
+              <Download size={20} className="mr-2" />
+            )}
+            {isLoading ? 'Compilando...' : 'Compilar e Baixar PDF'}
+          </button>
+          {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+        </div>
+
       </div>
+
+
 
       <div className="w-full md:w-1/2 overflow-y-auto p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
