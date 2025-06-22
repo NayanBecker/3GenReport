@@ -25,7 +25,7 @@ export function SortableBlockItem({ block, updateBlock }: SortableBlockItemProps
                 <button {...attributes} {...listeners} className="cursor-grab touch-none p-2 text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md self-start mt-1">
                     <GripVertical size={20} />
                 </button>
-                <div className="flex-grow bg-red-200 pl-3">
+                <div className="flex-grow pl-3">
                     <SlateBlock block={block} updateBlock={updateBlock} />
                 </div>
             </div>

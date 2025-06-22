@@ -1,4 +1,3 @@
-// src/types.ts
 import type { BaseEditor } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
@@ -28,4 +27,14 @@ declare module "slate" {
         Element: CustomElement;
         Text: CustomText;
     }
+}
+
+export interface DocConfig {
+    fontSize: 10 | 11 | 12;
+    paperSize: 'letterpaper' | 'a4paper';
+    marginTop: number;
+    marginBottom: number;
+    marginLeft: number;
+    marginRight: number;
+    lineSpacing: 'single' | 'onehalf' | 'double';
 }

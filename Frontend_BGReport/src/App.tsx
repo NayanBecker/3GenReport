@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+
 import { v4 as uuidv4 } from 'uuid';
-import { SortableBlockItem } from './components/SortableBlockItem';
-import type { Block, BlockType } from './types/block';
-import { generateLatex } from './lib/latexGenerator';
 import { Plus } from 'lucide-react';
+
+import type { Block, BlockType, DocConfig } from './types/block';
+import { generateLatex } from './lib/latexGenerator';
+import { generatePreambulo } from './lib/preambuloGenerator';
+
+import { SortableBlockItem } from './components/SortableBlockItem';
+import { DocumentConfigPanel } from './components/DocumentConfigPanel';
 
 
 const initialBlocks: Block[] = [
@@ -20,10 +25,23 @@ const initialBlocks: Block[] = [
     children: [{ type: "paragraph", children: [{ text: "Este é o parágrafo inicial do seu documento. Você pode formatar o texto em " }, { text: "negrito", bold: true }, { text: " ou " }, { text: "itálico", italic: true }, { text: "." }] }]
   },
 ];
+const initialConfig: DocConfig = {
+  fontSize: 12,
+  paperSize: 'a4paper',
+  marginTop: 2,
+  marginBottom: 2,
+  marginLeft: 3,
+  marginRight: 3,
+  lineSpacing: 'onehalf',
+};
 
 export default function App() {
   const [blocks, setBlocks] = useState<Block[]>(initialBlocks);
-  const [latexOutput, setLatexOutput] = useState("");
+  const [docConfig, setDocConfig] = useState<DocConfig>(initialConfig);
+
+  const [contentLatex, setContentLatex] = useState('');
+  const [preambleLatex, setPreambleLatex] = useState('');
+
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -59,12 +77,20 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const output = generateLatex(blocks);
-    setLatexOutput(output);
+    setPreambleLatex(generatePreambulo(docConfig));
+  }, [docConfig]);
+
+  useEffect(() => {
+    setContentLatex(generateLatex(blocks));
   }, [blocks]);
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100 dark:bg-gray-900">
+
+      <div className="w-full md:w-64 lg:w-80 bg-gray-800 flex-shrink-0">
+        <DocumentConfigPanel config={docConfig} setConfig={setDocConfig} />
+      </div>
+
       <div className="w-full md:w-1/2 overflow-y-auto p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -90,8 +116,14 @@ export default function App() {
         </div>
       </div>
       <div className="w-full md:w-1/2 bg-gray-800 text-gray-200 p-4 md:p-8 overflow-y-auto font-mono text-sm">
-        <h2 className="text-xl font-bold mb-4 text-white border-b border-gray-600 pb-2">Saída LaTeX em Tempo Real</h2>
-        <pre className="whitespace-pre-wrap"><code>{latexOutput}</code></pre>
+        <h2 className="text-xl font-bold mb-4 text-white border-b border-gray-600 pb-2">Saída LaTeX</h2>
+        <pre className="whitespace-pre-wrap">
+          <code className="text-cyan-400">{preambleLatex}</code>
+
+          <code className="text-gray-500">{"\n\n\\begin{document}\n\n"}</code>
+          <code className="text-gray-200">{contentLatex}</code>
+          <code className="text-gray-500">{"\n\n\\end{document}"}</code>
+        </pre>
       </div>
     </div>
   );
