@@ -1,4 +1,3 @@
-// src/modules/project/project.route.ts
 import { FastifyInstance } from 'fastify';
 import { createProjectController, getProjectsController, getProjectController, updateProjectController, deleteProjectController } from './project.controller';
 

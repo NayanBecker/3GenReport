@@ -1,4 +1,3 @@
-// src/modules/project/project.controller.ts
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { projectInputSchema, updateProjectSchema } from './project.schema';
 import { createProjectService, getProjectsService, getProjectService, updateProjectService, deleteProjectService } from './project.service';
