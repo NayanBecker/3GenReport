@@ -3,7 +3,7 @@ import fastifyJwt from '@fastify/jwt';
 import { userRoutes } from './modules/users/user.route';
 import fastifyCors from '@fastify/cors';
 import { projectRoutes } from './modules/projects/project.route';
-import { compileRoute } from './routes/compile.route';
+import { compileRoute } from './modules/compile/compile.route';
 
 declare module 'fastify' {
     export interface FastifyInstance {
